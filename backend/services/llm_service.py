@@ -87,6 +87,7 @@ Return JSON only."""
     
     async def generate_summary(self, api_key: str, model: str, preset: str, company_name: str, website_text: str, company_description: str = "", custom_prompt: Optional[str] = None) -> Dict:
         """Generate company summary using OpenAI"""
+        content = None
         try:
             client = self.get_client(api_key)
             
@@ -96,6 +97,8 @@ Return JSON only."""
                 website_text=website_text[:10000],  # Limit tokens
                 company_description=company_description or "Not provided"
             )
+            
+            logger.info(f"Calling OpenAI for summary - Company: {company_name}, Model: {model}")
             
             response = await client.chat.completions.create(
                 model=model,
@@ -108,17 +111,24 @@ Return JSON only."""
             )
             
             content = response.choices[0].message.content.strip()
+            logger.info(f"OpenAI response received - Length: {len(content)}, First 100 chars: {content[:100]}")
             
             # Remove markdown code blocks if present
             if content.startswith("```json"):
                 content = content[7:]
+                logger.info("Removed ```json prefix")
             if content.startswith("```"):
                 content = content[3:]
+                logger.info("Removed ``` prefix")
             if content.endswith("```"):
                 content = content[:-3]
+                logger.info("Removed ``` suffix")
             content = content.strip()
             
+            logger.info(f"After cleanup - Length: {len(content)}, First 100 chars: {content[:100]}")
+            
             summary_json = json.loads(content)
+            logger.info(f"✓ JSON parsed successfully for {company_name}")
             
             return {
                 "success": True,
@@ -127,7 +137,8 @@ Return JSON only."""
             }
         
         except json.JSONDecodeError as e:
-            logger.error(f"JSON decode error: {str(e)}, Content: {content if 'content' in locals() else 'No content'}")
+            logger.error(f"JSON decode error: {str(e)}, Content: {content if content else 'No content'}")
+            logger.error(f"Content repr: {repr(content)}")
             return {
                 "success": False,
                 "error_code": "INVALID_JSON",
@@ -136,6 +147,7 @@ Return JSON only."""
         except Exception as e:
             error_msg = str(e)
             logger.error(f"Error generating summary: {error_msg}")
+            logger.error(f"Exception type: {type(e).__name__}")
             
             # Check for authentication errors
             if "401" in error_msg or "Incorrect API key" in error_msg or "invalid_api_key" in error_msg:
