@@ -1,27 +1,29 @@
+from pathlib import Path
+import os
+from dotenv import load_dotenv
+
+# Load environment variables FIRST before any other imports
+ROOT_DIR = Path(__file__).parent
+load_dotenv(ROOT_DIR / '.env')
+
 from fastapi import FastAPI, APIRouter, HTTPException, Depends, BackgroundTasks, Request
 from fastapi.responses import RedirectResponse
-from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
-import os
 import logging
-from pathlib import Path
 from pydantic import BaseModel, Field, ConfigDict, EmailStr
 from typing import List, Optional, Dict, Any
 import uuid
 from datetime import datetime, timezone, timedelta
 import warnings
 
-# Import services
+# Import services AFTER loading .env
 from services.auth_service import AuthService, get_current_user
 from services.google_service import GoogleService
 from services.scraper_service import ScraperService
 from services.llm_service import LLMService
 from services.run_service import RunService
 from services.credit_service import CreditService
-
-ROOT_DIR = Path(__file__).parent
-load_dotenv(ROOT_DIR / '.env')
 
 # MongoDB connection
 mongo_url = os.environ['MONGO_URL']
