@@ -24,18 +24,18 @@ class LLMService:
 Return ONLY valid JSON with the schema below. If unknown, use null/empty. Do not guess.
 
 Schema:
-{
-  "company_one_liner": string|null,
-  "product_families": string[],
-  "capabilities_processes": string[],
-  "materials": string[],
-  "certifications": string[],
-  "industries_served": string[],
-  "quality_notes": string[],
-  "differentiators": string[],
-  "ideal_customer_fit": string|null,
-  "personalization_hooks": string[]
-}
+{{
+  "company_one_liner": "string or null",
+  "product_families": ["array of strings"],
+  "capabilities_processes": ["array of strings"],
+  "materials": ["array of strings"],
+  "certifications": ["array of strings"],
+  "industries_served": ["array of strings"],
+  "quality_notes": ["array of strings"],
+  "differentiators": ["array of strings"],
+  "ideal_customer_fit": "string or null",
+  "personalization_hooks": ["array of strings"]
+}}
 
 Input:
 - Company name: {company_name}
@@ -47,17 +47,17 @@ Input:
 Return ONLY valid JSON with the schema below. If a field is unknown, use null or an empty array. Do not guess.
 
 Schema:
-{
-  "company_one_liner": string|null,
-  "services": string[],
-  "modes": string[],
-  "geographies": string[],
-  "industries_served": string[],
-  "proof_points": string[],
-  "differentiators": string[],
-  "ideal_customer_fit": string|null,
-  "personalization_hooks": string[]
-}
+{{
+  "company_one_liner": "string or null",
+  "services": ["array of strings"],
+  "modes": ["array of strings"],
+  "geographies": ["array of strings"],
+  "industries_served": ["array of strings"],
+  "proof_points": ["array of strings"],
+  "differentiators": ["array of strings"],
+  "ideal_customer_fit": "string or null",
+  "personalization_hooks": ["array of strings"]
+}}
 
 Input:
 - Company name: {company_name}
