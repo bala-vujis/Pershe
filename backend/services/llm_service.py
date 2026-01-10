@@ -69,12 +69,12 @@ Input:
         return """You write short, believable first lines for B2B cold emails. The user will send emails manually; you only generate the text.
 
 RULES:
-- Output ONLY valid JSON: {"icebreaker":"..."}
+- Output ONLY valid JSON: {{"icebreaker":"..."}}
 - Keep it under 55 words.
 - Must be specific to the company based on the provided summary. No generic compliments.
 - If data is weak, ask a smart, relevant question instead of inventing details.
 - No emojis. No buzzwords.
-- Use exactly one blank line after "Hey {FirstName}," (insert \n\n).
+- Use exactly one blank line after "Hey {{FirstName}}," (insert \\n\\n).
 - Do not mention "I used AI" or "I scraped your website".
 
 Inputs:
