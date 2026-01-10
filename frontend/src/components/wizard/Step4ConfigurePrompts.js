@@ -34,8 +34,8 @@ const Step4ConfigurePrompts = () => {
               <SelectValue />
             </SelectTrigger>
             <SelectContent className="bg-zinc-900 border-zinc-800">
-              <SelectItem value="gpt-4o" className="text-white">GPT-4o (Recommended)</SelectItem>
-              <SelectItem value="gpt-4o-mini" className="text-white">GPT-4o Mini (Faster)</SelectItem>
+              <SelectItem value="gpt-4o-mini" className="text-white">GPT-4o Mini (Recommended)</SelectItem>
+              <SelectItem value="gpt-4o" className="text-white">GPT-4o (More Powerful)</SelectItem>
             </SelectContent>
           </Select>
         </div>
