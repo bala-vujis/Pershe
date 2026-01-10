@@ -32,11 +32,13 @@ class RunService:
         
         # Fetch sheet data
         try:
+            # Use row_range from project, or default to A1:Z1000
+            row_range = project.get('row_range') or 'A1:Z1000'
             values = await self.google_service.get_sheet_values(
                 user_id,
                 project['spreadsheet_id'],
                 project['sheet_name'],
-                project.get('row_range', 'A1:Z1000')
+                row_range
             )
         except Exception as e:
             raise ValueError(f"Failed to fetch sheet data: {str(e)}")
