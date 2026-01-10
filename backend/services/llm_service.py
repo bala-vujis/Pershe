@@ -100,14 +100,24 @@ Return JSON only."""
             response = await client.chat.completions.create(
                 model=model,
                 messages=[
-                    {"role": "system", "content": "You are a precise data extraction assistant. Always return valid JSON only."},
+                    {"role": "system", "content": "You are a precise data extraction assistant. You MUST return ONLY valid JSON with no additional text before or after. Do not include markdown code blocks or any other formatting."},
                     {"role": "user", "content": prompt}
                 ],
                 temperature=0.3,
                 response_format={"type": "json_object"}
             )
             
-            content = response.choices[0].message.content
+            content = response.choices[0].message.content.strip()
+            
+            # Remove markdown code blocks if present
+            if content.startswith("```json"):
+                content = content[7:]
+            if content.startswith("```"):
+                content = content[3:]
+            if content.endswith("```"):
+                content = content[:-3]
+            content = content.strip()
+            
             summary_json = json.loads(content)
             
             return {
@@ -117,11 +127,11 @@ Return JSON only."""
             }
         
         except json.JSONDecodeError as e:
-            logger.error(f"JSON decode error: {str(e)}")
+            logger.error(f"JSON decode error: {str(e)}, Content: {content}")
             return {
                 "success": False,
                 "error_code": "INVALID_JSON",
-                "error_message": "LLM returned invalid JSON"
+                "error_message": f"LLM returned invalid JSON: {str(e)}"
             }
         except Exception as e:
             logger.error(f"Error generating summary: {str(e)}")
