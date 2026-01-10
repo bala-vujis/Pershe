@@ -194,6 +194,24 @@ Return JSON only."""
                 template = Template(prompt_template)
                 prompt = template.safe_substitute(**format_vars)
             
+            # If this is a custom prompt (user-provided template), wrap it with clear instructions
+            if custom_prompt:
+                prompt = f"""Based on the company summary below, generate a personalized cold email icebreaker following this template:
+
+Template:
+{prompt}
+
+Company Summary:
+{json.dumps(summary_json, indent=2)}
+
+Instructions:
+- Replace placeholders like [specific detail] with actual information from the summary
+- Keep it under 55 words
+- Be specific and relevant
+- No emojis or buzzwords
+- Output ONLY this JSON format: {{"icebreaker": "your generated text here"}}
+- The icebreaker should be the complete email opener text, not a template"""
+            
             logger.info(f"Calling OpenAI for icebreaker - Company: {company_name}, Model: {model}")
             
             response = await client.chat.completions.create(
@@ -225,8 +243,23 @@ Return JSON only."""
             
             result_json = json.loads(content)
             
+            # Try to extract icebreaker from various possible keys
             icebreaker = result_json.get('icebreaker', '')
-            logger.info(f"✓ Icebreaker generated successfully for {company_name}")
+            if not icebreaker:
+                # Try other possible keys
+                icebreaker = result_json.get('email', '')
+            if not icebreaker:
+                icebreaker = result_json.get('message', '')
+            if not icebreaker:
+                # If response has nested structure, try to extract
+                if 'email_template' in result_json:
+                    greeting = result_json['email_template'].get('greeting', '')
+                    body = result_json['email_template'].get('body', '')
+                    if isinstance(body, list):
+                        body = ' '.join([str(item) for item in body])
+                    icebreaker = f"{greeting}\n\n{body}"
+            
+            logger.info(f"✓ Icebreaker generated successfully for {company_name}: {icebreaker[:50]}...")
             
             return {
                 "success": True,
