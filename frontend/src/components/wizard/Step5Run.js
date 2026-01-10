@@ -19,7 +19,9 @@ const Step5Run = () => {
         name: wizardData.projectName,
         spreadsheet_id: wizardData.spreadsheetId,
         sheet_name: wizardData.sheetName,
-        header_row: 1
+        header_row: 1,
+        start_row: wizardData.startRow || 2,
+        end_row: wizardData.endRow || 100
       };
 
       const fieldMappingPayload = {
