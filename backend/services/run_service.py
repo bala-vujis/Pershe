@@ -271,9 +271,25 @@ class RunService:
                 )
                 
                 # Deduct credit (1 credit per successful processing)
-                from services.credit_service import CreditService
-                credit_service = CreditService(self.db)
-                await credit_service.deduct_credits(item['run_id'], 1, f"Run item {item_id}")
+                run = await self.db.runs.find_one({"id": item['run_id']})
+                if run:
+                    user_id = run['user_id']
+                    # Get balance
+                    balance_doc = await self.db.credit_balances.find_one({"user_id": user_id})
+                    if balance_doc and balance_doc.get('balance', 0) >= 1:
+                        # Deduct credit
+                        await self.db.credit_balances.update_one(
+                            {"user_id": user_id},
+                            {"$inc": {"balance": -1}}
+                        )
+                        # Create ledger entry
+                        await self.db.credit_ledger.insert_one({
+                            "id": str(uuid.uuid4()),
+                            "user_id": user_id,
+                            "delta": -1,
+                            "reason": f"Run item {item_id}",
+                            "created_at": datetime.now(timezone.utc).isoformat()
+                        })
             
             except Exception as e:
                 logger.error(f"Error processing item {item.get('id')}: {str(e)}")
