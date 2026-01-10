@@ -17,6 +17,8 @@ const Step2SelectSheet = () => {
   const [projectName, setProjectName] = useState(wizardData.projectName || '');
   const [selectedSpreadsheet, setSelectedSpreadsheet] = useState(wizardData.spreadsheetId || '');
   const [selectedTab, setSelectedTab] = useState(wizardData.sheetName || '');
+  const [startRow, setStartRow] = useState(wizardData.startRow || 2);
+  const [endRow, setEndRow] = useState(wizardData.endRow || 100);
 
   useEffect(() => {
     fetchSpreadsheets();
@@ -51,9 +53,33 @@ const Step2SelectSheet = () => {
     }
   };
 
+  const calculateEstimatedTime = () => {
+    const rowCount = endRow - startRow + 1;
+    // Each row takes ~10 seconds (scraping + LLM calls)
+    const totalSeconds = rowCount * 10;
+    const minutes = Math.ceil(totalSeconds / 60);
+    return { rowCount, minutes };
+  };
+
   const handleNext = () => {
     if (!projectName || !selectedSpreadsheet || !selectedTab) {
       toast.error('Please fill in all fields');
+      return;
+    }
+
+    if (startRow < 2) {
+      toast.error('Start row must be at least 2 (row 1 is headers)');
+      return;
+    }
+
+    if (endRow < startRow) {
+      toast.error('End row must be greater than start row');
+      return;
+    }
+
+    const rowCount = endRow - startRow + 1;
+    if (rowCount > 500) {
+      toast.error('Maximum 500 rows per run. Please adjust your range.');
       return;
     }
 
@@ -62,10 +88,14 @@ const Step2SelectSheet = () => {
       projectName,
       spreadsheetId: selectedSpreadsheet,
       spreadsheetName: selectedSheet?.name,
-      sheetName: selectedTab
+      sheetName: selectedTab,
+      startRow,
+      endRow
     });
     setWizardStep(3);
   };
+
+  const estimate = calculateEstimatedTime();
 
   return (
     <div data-testid="step-2-select-sheet">
@@ -124,6 +154,52 @@ const Step2SelectSheet = () => {
               </Select>
             </div>
           )}
+
+          <div className="border-t border-white/10 pt-6">
+            <h3 className="text-lg font-outfit font-medium mb-4">Row Range</h3>
+            <p className="text-sm text-zinc-400 mb-4">Row 1 contains headers. Processing starts from row 2.</p>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label className="text-sm text-zinc-300 mb-2 block">Start Row</Label>
+                <Input
+                  type="number"
+                  min="2"
+                  value={startRow}
+                  onChange={(e) => setStartRow(parseInt(e.target.value) || 2)}
+                  data-testid="start-row-input"
+                  className="bg-zinc-950/50 border-zinc-800 text-white"
+                />
+              </div>
+              <div>
+                <Label className="text-sm text-zinc-300 mb-2 block">End Row</Label>
+                <Input
+                  type="number"
+                  min="2"
+                  value={endRow}
+                  onChange={(e) => setEndRow(parseInt(e.target.value) || 100)}
+                  data-testid="end-row-input"
+                  className="bg-zinc-950/50 border-zinc-800 text-white"
+                />
+              </div>
+            </div>
+
+            <div className="mt-4 p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-lg">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-emerald-400">Estimated Processing</p>
+                  <p className="text-xs text-zinc-400 mt-1">Based on {estimate.rowCount} rows</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-2xl font-bold text-emerald-400">~{estimate.minutes} min</p>
+                  <p className="text-xs text-zinc-500">10 sec per row avg</p>
+                </div>
+              </div>
+              <p className="text-xs text-zinc-500 mt-3">
+                💡 Maximum: 500 rows per run • Preview mode: 3 rows only
+              </p>
+            </div>
+          </div>
 
           <div className="flex gap-4">
             <Button
