@@ -196,16 +196,26 @@ Return JSON only."""
             }
         
         except json.JSONDecodeError as e:
-            logger.error(f"JSON decode error: {str(e)}, Content: {content}")
+            logger.error(f"JSON decode error: {str(e)}, Content: {content if 'content' in locals() else 'No content'}")
             return {
                 "success": False,
                 "error_code": "INVALID_JSON",
                 "error_message": f"LLM returned invalid JSON: {str(e)}"
             }
         except Exception as e:
-            logger.error(f"Error generating icebreaker: {str(e)}")
+            error_msg = str(e)
+            logger.error(f"Error generating icebreaker: {error_msg}")
+            
+            # Check for authentication errors
+            if "401" in error_msg or "Incorrect API key" in error_msg or "invalid_api_key" in error_msg:
+                return {
+                    "success": False,
+                    "error_code": "INVALID_API_KEY",
+                    "error_message": "Invalid OpenAI API key. Please update your API key in Settings."
+                }
+            
             return {
                 "success": False,
                 "error_code": "LLM_ERROR",
-                "error_message": str(e)
+                "error_message": error_msg
             }
