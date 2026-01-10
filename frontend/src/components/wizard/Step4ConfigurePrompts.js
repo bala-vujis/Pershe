@@ -11,7 +11,7 @@ const Step4ConfigurePrompts = () => {
   const [config, setConfig] = useState({
     summaryPreset: wizardData.summaryPreset || 'logistics',
     icebreakerPrompt: wizardData.icebreakerPrompt || `Hey {FirstName},\n\nI noticed [specific detail from {company_name}]. [Ask relevant question or make relevant observation].\n\nWorth a quick chat?`,
-    model: wizardData.model || 'gpt-4o'
+    model: wizardData.model || 'gpt-4o-mini'
   });
 
   const handleNext = () => {
