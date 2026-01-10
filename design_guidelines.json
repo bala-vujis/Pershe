@@ -1,0 +1,138 @@
+{
+  "identity": {
+    "name": "Sheet Personalizer",
+    "persona": "The Digital Emerald Mine",
+    "vibe": "Professional, High-Precision, Growth-Oriented, Dark Mode Control Room",
+    "principles": [
+      "Fusion: Spreadsheet Utility x Cyberpunk Aesthetics",
+      "Emotion: Trust, Power, Efficiency",
+      "Content: Data is the hero; UI is the frame",
+      "Contrast: Deep blacks vs. Glowing Emeralds"
+    ]
+  },
+  "typography": {
+    "font_family": {
+      "headings": "Outfit, sans-serif",
+      "body": "Inter, sans-serif",
+      "mono": "JetBrains Mono, monospace"
+    },
+    "weights": {
+      "headings": "600 (SemiBold) or 500 (Medium)",
+      "body": "400 (Regular)"
+    },
+    "scale": {
+      "h1": "text-5xl md:text-6xl tracking-tight font-semibold",
+      "h2": "text-3xl md:text-4xl tracking-tight font-medium",
+      "h3": "text-2xl font-medium",
+      "body": "text-base leading-relaxed text-zinc-400",
+      "small": "text-sm text-zinc-500"
+    }
+  },
+  "colors": {
+    "palette": {
+      "background": "#0a0a0a",
+      "foreground": "#ffffff",
+      "card": "#121212",
+      "card_foreground": "#ffffff",
+      "popover": "#0a0a0a",
+      "popover_foreground": "#ffffff",
+      "primary": "#10b981",
+      "primary_foreground": "#000000",
+      "secondary": "#27272a",
+      "secondary_foreground": "#ffffff",
+      "muted": "#18181b",
+      "muted_foreground": "#a1a1aa",
+      "accent": "#10b981",
+      "accent_foreground": "#ffffff",
+      "destructive": "#ef4444",
+      "destructive_foreground": "#ffffff",
+      "border": "#27272a",
+      "input": "#27272a",
+      "ring": "#10b981"
+    },
+    "usage": {
+      "primary_action": "bg-emerald-500 hover:bg-emerald-600 text-black font-medium shadow-[0_0_15px_rgba(16,185,129,0.4)]",
+      "secondary_action": "bg-zinc-800 hover:bg-zinc-700 text-white border border-zinc-700",
+      "surface": "bg-zinc-950/50 border border-white/10 backdrop-blur-md",
+      "success_text": "text-emerald-400",
+      "error_text": "text-red-400"
+    }
+  },
+  "layout": {
+    "grid_system": {
+      "dashboard": "grid grid-cols-1 md:grid-cols-12 gap-6 p-6",
+      "landing": "grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 px-6 md:px-12 max-w-7xl mx-auto"
+    },
+    "spacing": {
+      "section_padding": "py-20 md:py-32",
+      "container_padding": "px-6 md:px-8",
+      "card_padding": "p-6 md:p-8"
+    },
+    "containers": {
+      "main_wrapper": "min-h-screen bg-black text-white selection:bg-emerald-500/30",
+      "glass_panel": "bg-zinc-900/40 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl"
+    }
+  },
+  "components": {
+    "buttons": {
+      "primary": "h-10 px-6 rounded-md bg-emerald-500 text-black font-medium hover:bg-emerald-400 transition-all duration-300 shadow-[0_0_20px_-5px_rgba(16,185,129,0.5)] hover:shadow-[0_0_25px_-5px_rgba(16,185,129,0.7)]",
+      "secondary": "h-10 px-6 rounded-md bg-zinc-900 text-white border border-zinc-800 hover:bg-zinc-800 hover:border-zinc-700 transition-all duration-200",
+      "ghost": "h-10 px-4 rounded-md text-zinc-400 hover:text-white hover:bg-white/5 transition-colors"
+    },
+    "inputs": {
+      "default": "h-10 bg-zinc-950/50 border-zinc-800 focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 rounded-md text-white placeholder:text-zinc-600 transition-all"
+    },
+    "cards": {
+      "dashboard": "bg-zinc-900/20 border border-white/5 rounded-xl p-6 hover:border-white/10 transition-colors",
+      "feature": "group relative overflow-hidden bg-zinc-900/40 border border-white/10 rounded-2xl p-8 hover:bg-zinc-900/60 transition-all duration-500"
+    },
+    "tables": {
+      "wrapper": "w-full overflow-hidden rounded-lg border border-white/5 bg-zinc-900/20",
+      "header": "bg-zinc-900/50 text-zinc-400 font-medium text-xs uppercase tracking-wider border-b border-white/5",
+      "row": "border-b border-white/5 hover:bg-white/[0.02] transition-colors",
+      "cell": "p-4 text-sm text-zinc-300"
+    },
+    "wizard": {
+      "stepper": "flex items-center gap-2 mb-8",
+      "step_active": "w-8 h-8 rounded-full bg-emerald-500 text-black flex items-center justify-center font-bold shadow-[0_0_10px_rgba(16,185,129,0.5)]",
+      "step_inactive": "w-8 h-8 rounded-full bg-zinc-900 border border-zinc-800 text-zinc-500 flex items-center justify-center",
+      "connector": "h-[1px] flex-1 bg-zinc-800"
+    }
+  },
+  "visual_enhancers": {
+    "gradients": {
+      "hero_glow": "bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-emerald-900/20 via-black to-black",
+      "card_hover": "bg-gradient-to-b from-white/5 to-transparent"
+    },
+    "effects": {
+      "glass": "backdrop-blur-md bg-black/40 border border-white/10",
+      "neon_border": "border border-emerald-500/30 shadow-[0_0_15px_-3px_rgba(16,185,129,0.2)]"
+    }
+  },
+  "assets": {
+    "images": {
+      "hero_bg": "https://images.pexels.com/photos/17485864/pexels-photo-17485864.png",
+      "team_silhouette": "https://images.pexels.com/photos/2422497/pexels-photo-2422497.jpeg",
+      "abstract_network": "https://images.pexels.com/photos/5200063/pexels-photo-5200063.jpeg"
+    },
+    "icons": "lucide-react"
+  },
+  "instructions_to_main_agent": [
+    "1. INSTALL DEPENDENCIES: npm install lucide-react framer-motion clsx tailwind-merge @radix-ui/react-slot",
+    "2. CONFIGURE TAILWIND: Update tailwind.config.js to include the custom colors (emerald-500 as primary) and fonts (Outfit/Inter).",
+    "3. GLOBAL CSS: Update index.css with the HSL values for the dark theme variables provided in the 'colors' section.",
+    "4. LAYOUT STRATEGY: Use the 'Control Room' grid for the dashboard. Dense data, high contrast.",
+    "5. WIZARD LOGIC: Implement the 5-step wizard using a state machine approach. Keep the UI focused - one step at a time.",
+    "6. COLUMN MAPPING: Use a clean two-column layout. Left: Source (Sheet Headers), Right: Target (App Fields). Use Select/Dropdown components.",
+    "7. FEEDBACK: Use 'sonner' for all toast notifications. Success = Emerald, Error = Red.",
+    "8. ANIMATION: Add subtle entrance animations (fade-in-up) to the wizard steps and dashboard cards using framer-motion."
+  ],
+  "universal_guidelines": [
+    "DO NOT use gradients for text unless specifically asked.",
+    "DO NOT use 'Inter' for headings. Use 'Outfit'.",
+    "Ensure all interactive elements have hover states (brightness-110 or bg-opacity change).",
+    "Use 'data-testid' on all buttons and inputs.",
+    "Always use 'lucide-react' for icons.",
+    "Dark mode is default and only mode. Do not implement light mode toggle."
+  ]
+}
