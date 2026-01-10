@@ -5,6 +5,7 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Dashboard from './pages/Dashboard';
 import NewProject from './pages/NewProject';
+import ProjectDetail from './pages/ProjectDetail';
 import RunDetail from './pages/RunDetail';
 import Settings from './pages/Settings';
 import useStore from './store/useStore';
@@ -36,6 +37,14 @@ function App() {
             element={
               <PrivateRoute>
                 <NewProject />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/projects/:projectId"
+            element={
+              <PrivateRoute>
+                <ProjectDetail />
               </PrivateRoute>
             }
           />
