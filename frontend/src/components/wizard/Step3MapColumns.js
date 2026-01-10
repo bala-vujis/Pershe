@@ -138,12 +138,12 @@ const Step3MapColumns = () => {
 
             <div>
               <Label className="text-sm text-zinc-300 mb-2 block">Email (Optional)</Label>
-              <Select value={mapping.emailCol} onValueChange={(v) => setMapping({...mapping, emailCol: v})}>
+              <Select value={mapping.emailCol || "none"} onValueChange={(v) => setMapping({...mapping, emailCol: v === "none" ? "" : v})}>
                 <SelectTrigger data-testid="email-col-select" className="bg-zinc-950/50 border-zinc-800 text-white">
                   <SelectValue placeholder="Select column" />
                 </SelectTrigger>
                 <SelectContent className="bg-zinc-900 border-zinc-800">
-                  <SelectItem value="" className="text-white">None</SelectItem>
+                  <SelectItem value="none" className="text-white">None</SelectItem>
                   {headers.map((h) => (
                     <SelectItem key={h} value={h} className="text-white">{h}</SelectItem>
                   ))}
@@ -153,12 +153,12 @@ const Step3MapColumns = () => {
 
             <div>
               <Label className="text-sm text-zinc-300 mb-2 block">Title (Optional)</Label>
-              <Select value={mapping.titleCol} onValueChange={(v) => setMapping({...mapping, titleCol: v})}>
+              <Select value={mapping.titleCol || "none"} onValueChange={(v) => setMapping({...mapping, titleCol: v === "none" ? "" : v})}>
                 <SelectTrigger data-testid="title-col-select" className="bg-zinc-950/50 border-zinc-800 text-white">
                   <SelectValue placeholder="Select column" />
                 </SelectTrigger>
                 <SelectContent className="bg-zinc-900 border-zinc-800">
-                  <SelectItem value="" className="text-white">None</SelectItem>
+                  <SelectItem value="none" className="text-white">None</SelectItem>
                   {headers.map((h) => (
                     <SelectItem key={h} value={h} className="text-white">{h}</SelectItem>
                   ))}
@@ -168,12 +168,12 @@ const Step3MapColumns = () => {
 
             <div>
               <Label className="text-sm text-zinc-300 mb-2 block">Description (Optional)</Label>
-              <Select value={mapping.descriptionCol} onValueChange={(v) => setMapping({...mapping, descriptionCol: v})}>
+              <Select value={mapping.descriptionCol || "none"} onValueChange={(v) => setMapping({...mapping, descriptionCol: v === "none" ? "" : v})}>
                 <SelectTrigger data-testid="description-col-select" className="bg-zinc-950/50 border-zinc-800 text-white">
                   <SelectValue placeholder="Select column" />
                 </SelectTrigger>
                 <SelectContent className="bg-zinc-900 border-zinc-800">
-                  <SelectItem value="" className="text-white">None</SelectItem>
+                  <SelectItem value="none" className="text-white">None</SelectItem>
                   {headers.map((h) => (
                     <SelectItem key={h} value={h} className="text-white">{h}</SelectItem>
                   ))}
