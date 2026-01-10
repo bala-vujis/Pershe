@@ -34,6 +34,12 @@ class RunService:
         try:
             # Use row_range from project, or default to A1:Z1000
             row_range = project.get('row_range') or 'A1:Z1000'
+            
+            # If project has start_row and end_row, construct A1 notation
+            start_row = project.get('start_row', 2)
+            end_row = project.get('end_row', 1000)
+            row_range = f"A{start_row}:Z{end_row}"
+            
             values = await self.google_service.get_sheet_values(
                 user_id,
                 project['spreadsheet_id'],
