@@ -164,16 +164,37 @@ Return JSON only."""
     
     async def generate_icebreaker(self, api_key: str, model: str, first_name: str, company_name: str, summary_json: Dict, title: str = "", custom_prompt: Optional[str] = None) -> Dict:
         """Generate personalized icebreaker using OpenAI"""
+        content = None
         try:
             client = self.get_client(api_key)
             
             prompt_template = custom_prompt if custom_prompt else self.get_icebreaker_prompt()
-            prompt = prompt_template.format(
-                first_name=first_name or "there",
-                company_name=company_name,
-                summary_json=json.dumps(summary_json, indent=2),
-                title=title or "Not provided"
-            )
+            
+            # Prepare format variables supporting both naming conventions
+            format_vars = {
+                'first_name': first_name or "there",
+                'FirstName': first_name or "there",
+                'company_name': company_name,
+                'Company_Name': company_name,
+                'Shortened_Company_Name': company_name.split()[0] if company_name else "",
+                'summary_json': json.dumps(summary_json, indent=2),
+                'title': title or "Not provided",
+                'Title': title or "Not provided"
+            }
+            
+            # Use safe_substitute to avoid KeyError if variables don't match
+            from string import Template
+            
+            # First try regular format for our standard prompts
+            try:
+                prompt = prompt_template.format(**format_vars)
+            except KeyError as e:
+                # If format fails, try Template.safe_substitute which ignores missing keys
+                logger.warning(f"Format failed, trying safe substitute: {e}")
+                template = Template(prompt_template)
+                prompt = template.safe_substitute(**format_vars)
+            
+            logger.info(f"Calling OpenAI for icebreaker - Company: {company_name}, Model: {model}")
             
             response = await client.chat.completions.create(
                 model=model,
@@ -186,19 +207,26 @@ Return JSON only."""
             )
             
             content = response.choices[0].message.content.strip()
+            logger.info(f"OpenAI response received - Length: {len(content)}, First 100 chars: {content[:100]}")
             
             # Remove markdown code blocks if present
             if content.startswith("```json"):
                 content = content[7:]
+                logger.info("Removed ```json prefix")
             if content.startswith("```"):
                 content = content[3:]
+                logger.info("Removed ``` prefix")
             if content.endswith("```"):
                 content = content[:-3]
+                logger.info("Removed ``` suffix")
             content = content.strip()
+            
+            logger.info(f"After cleanup - Length: {len(content)}, First 100 chars: {content[:100]}")
             
             result_json = json.loads(content)
             
             icebreaker = result_json.get('icebreaker', '')
+            logger.info(f"✓ Icebreaker generated successfully for {company_name}")
             
             return {
                 "success": True,
@@ -207,7 +235,8 @@ Return JSON only."""
             }
         
         except json.JSONDecodeError as e:
-            logger.error(f"JSON decode error: {str(e)}, Content: {content if 'content' in locals() else 'No content'}")
+            logger.error(f"JSON decode error: {str(e)}, Content: {content if content else 'No content'}")
+            logger.error(f"Content repr: {repr(content)}")
             return {
                 "success": False,
                 "error_code": "INVALID_JSON",
@@ -216,6 +245,7 @@ Return JSON only."""
         except Exception as e:
             error_msg = str(e)
             logger.error(f"Error generating icebreaker: {error_msg}")
+            logger.error(f"Exception type: {type(e).__name__}")
             
             # Check for authentication errors
             if "401" in error_msg or "Incorrect API key" in error_msg or "invalid_api_key" in error_msg:
