@@ -221,6 +221,8 @@ async def create_project(
             "sheet_name": project.sheet_name,
             "header_row": project.header_row,
             "row_range": project.row_range,
+            "start_row": project.start_row,
+            "end_row": project.end_row,
             "created_at": datetime.now(timezone.utc).isoformat()
         }
         await db.projects.insert_one(project_doc)
