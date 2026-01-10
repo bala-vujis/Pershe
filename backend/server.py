@@ -67,6 +67,8 @@ class ProjectCreate(BaseModel):
     sheet_name: str
     header_row: int = 1
     row_range: Optional[str] = None
+    start_row: Optional[int] = 2
+    end_row: Optional[int] = 100
 
 class FieldMappingCreate(BaseModel):
     website_col: str
