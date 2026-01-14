@@ -14,51 +14,49 @@
 # Main and testing agents must follow this exact format to maintain testing data. 
 # The testing data must be entered in yaml format Below is the data structure:
 # 
-## user_problem_statement: {problem_statement}
+## user_problem_statement: "Build features on top of Sheet Personalizer"
 ## backend:
-##   - task: "Task name"
+##   - task: "Environment Setup"
 ##     implemented: true
-##     working: true  # or false or "NA"
-##     file: "file_path.py"
+##     working: true
+##     file: "requirements.txt"
 ##     stuck_count: 0
-##     priority: "high"  # or "medium" or "low"
+##     priority: "high"
 ##     needs_retesting: false
 ##     status_history:
-##         -working: true  # or false or "NA"
-##         -agent: "main"  # or "testing" or "user"
-##         -comment: "Detailed comment about status"
+##         -working: true
+##         -agent: "main"
+##         -comment: "Installed dependencies, fixed google-auth conflict, started services. API Health check passed."
 ##
 ## frontend:
-##   - task: "Task name"
+##   - task: "Environment Setup"
 ##     implemented: true
-##     working: true  # or false or "NA"
-##     file: "file_path.js"
+##     working: true
+##     file: "package.json"
 ##     stuck_count: 0
-##     priority: "high"  # or "medium" or "low"
+##     priority: "high"
 ##     needs_retesting: false
 ##     status_history:
-##         -working: true  # or false or "NA"
-##         -agent: "main"  # or "testing" or "user"
-##         -comment: "Detailed comment about status"
+##         -working: true
+##         -agent: "main"
+##         -comment: "Installed dependencies and started frontend service."
 ##
 ## metadata:
 ##   created_by: "main_agent"
 ##   version: "1.0"
-##   test_sequence: 0
+##   test_sequence: 1
 ##   run_ui: false
 ##
 ## test_plan:
 ##   current_focus:
-##     - "Task name 1"
-##     - "Task name 2"
-##   stuck_tasks:
-##     - "Task name with persistent issues"
+##     - "Await user instruction"
+##   stuck_tasks: []
 ##   test_all: false
-##   test_priority: "high_first"  # or "sequential" or "stuck_first"
+##   test_priority: "sequential"
 ##
 ## agent_communication:
-##     -agent: "main"  # or "testing" or "user"
-##     -message: "Communication message between agents"
+##     -agent: "main"
+##     -message: "Environment setup complete. Ready for development."
 
 # Protocol Guidelines for Main agent
 #
