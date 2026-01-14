@@ -14,7 +14,7 @@
 # Main and testing agents must follow this exact format to maintain testing data. 
 # The testing data must be entered in yaml format Below is the data structure:
 # 
-## user_problem_statement: "Build features on top of Sheet Personalizer"
+## user_problem_statement: "Fix Google Connection Issue"
 ## backend:
 ##   - task: "Environment Setup"
 ##     implemented: true
@@ -27,6 +27,18 @@
 ##         -working: true
 ##         -agent: "main"
 ##         -comment: "Installed dependencies, fixed google-auth conflict, started services. API Health check passed."
+##
+##   - task: "Google OAuth Configuration"
+##     implemented: true
+##     working: true
+##     file: ".env"
+##     stuck_count: 0
+##     priority: "high"
+##     needs_retesting: false
+##     status_history:
+##         -working: true
+##         -agent: "main"
+##         -comment: "Updated Google Client ID and Secret with user provided values. Verified Redirect URI matches backend config."
 ##
 ## frontend:
 ##   - task: "Environment Setup"
@@ -43,20 +55,20 @@
 ##
 ## metadata:
 ##   created_by: "main_agent"
-##   version: "1.0"
-##   test_sequence: 1
+##   version: "1.1"
+##   test_sequence: 2
 ##   run_ui: false
 ##
 ## test_plan:
 ##   current_focus:
-##     - "Await user instruction"
+##     - "Verify Google OAuth flow"
 ##   stuck_tasks: []
 ##   test_all: false
 ##   test_priority: "sequential"
 ##
 ## agent_communication:
 ##     -agent: "main"
-##     -message: "Environment setup complete. Ready for development."
+##     -message: "Updated Google credentials. Need user to verify Redirect URI in Google Console."
 
 # Protocol Guidelines for Main agent
 #
