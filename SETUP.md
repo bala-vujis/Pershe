@@ -33,8 +33,8 @@ The app requires Google OAuth to access Google Sheets. Here's how to set it up:
    - Click "Create Credentials" → "OAuth client ID"
    - Application type: "Web application"
    - Name: "Sheet Personalizer"
-   - Authorized JavaScript origins: `https://your-app-url.preview.emergentagent.com`
-   - Authorized redirect URIs: `https://your-app-url.preview.emergentagent.com/api/oauth/google/callback`
+   - Authorized JavaScript origins: `https://outreach-wizard-7.preview.emergentagent.com`
+   - Authorized redirect URIs: `https://outreach-wizard-7.preview.emergentagent.com/api/oauth/google/callback`
    - Click "Create"
    - **COPY** the Client ID and Client Secret
 
@@ -47,7 +47,7 @@ The app requires Google OAuth to access Google Sheets. Here's how to set it up:
    ```bash
    GOOGLE_CLIENT_ID="your-client-id-from-google-console"
    GOOGLE_CLIENT_SECRET="your-client-secret-from-google-console"
-   GOOGLE_REDIRECT_URI="https://your-app-url.preview.emergentagent.com/api/oauth/google/callback"
+   GOOGLE_REDIRECT_URI="https://outreach-wizard-7.preview.emergentagent.com/api/oauth/google/callback"
    ```
 
 7. **Restart Backend**:
@@ -66,7 +66,7 @@ You'll need an OpenAI API key to generate summaries and icebreakers:
 
 ### Step 3: Access the Application
 
-1. Open your app URL: `https://your-app-url.preview.emergentagent.com`
+1. Open your app URL: `https://outreach-wizard-7.preview.emergentagent.com`
 2. Click "Get Started" to sign up
 3. Create an account (you'll receive 50 free credits)
 

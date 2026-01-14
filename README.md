@@ -75,7 +75,7 @@ JWT_SECRET="your-strong-secret-key-here"
 # Google OAuth Configuration
 GOOGLE_CLIENT_ID="your-google-client-id"
 GOOGLE_CLIENT_SECRET="your-google-client-secret"
-GOOGLE_REDIRECT_URI="https://your-app-url.preview.emergentagent.com/api/oauth/google/callback"
+GOOGLE_REDIRECT_URI="https://outreach-wizard-7.preview.emergentagent.com/api/oauth/google/callback"
 ```
 
 ### 2. Get Google OAuth Credentials
@@ -91,7 +91,7 @@ GOOGLE_REDIRECT_URI="https://your-app-url.preview.emergentagent.com/api/oauth/go
 5. Go to **APIs & Services → Credentials**
    - Create OAuth 2.0 Client ID
    - Application type: Web application
-   - Authorized redirect URIs: `https://your-app-url.preview.emergentagent.com/api/oauth/google/callback`
+   - Authorized redirect URIs: `https://outreach-wizard-7.preview.emergentagent.com/api/oauth/google/callback`
    - Save Client ID and Client Secret
 
 ### 3. Frontend Setup
