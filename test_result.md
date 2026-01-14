@@ -38,7 +38,7 @@
 ##     status_history:
 ##         -working: true
 ##         -agent: "main"
-##         -comment: "Updated Google Client ID and Secret with user provided values. Verified Redirect URI matches backend config."
+##         -comment: "Updated Google Client ID and Secret. Verified auth URL generation uses new credentials."
 ##
 ## frontend:
 ##   - task: "Environment Setup"
@@ -55,20 +55,20 @@
 ##
 ## metadata:
 ##   created_by: "main_agent"
-##   version: "1.1"
-##   test_sequence: 2
+##   version: "1.2"
+##   test_sequence: 3
 ##   run_ui: false
 ##
 ## test_plan:
 ##   current_focus:
-##     - "Verify Google OAuth flow"
+##     - "User UI Verification"
 ##   stuck_tasks: []
 ##   test_all: false
 ##   test_priority: "sequential"
 ##
 ## agent_communication:
 ##     -agent: "main"
-##     -message: "Updated Google credentials. Need user to verify Redirect URI in Google Console."
+##     -message: "Backend fully configured with new Google credentials. Waiting for user to test UI flow."
 
 # Protocol Guidelines for Main agent
 #
