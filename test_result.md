@@ -14,9 +14,9 @@
 # Main and testing agents must follow this exact format to maintain testing data. 
 # The testing data must be entered in yaml format Below is the data structure:
 # 
-## user_problem_statement: "Fix Run Data Mapping Issue"
+## user_problem_statement: "Fix Run Data Mapping and Execution Error"
 ## backend:
-##   - task: "Run Service Header Fix"
+##   - task: "Run Service Row Index Fix"
 ##     implemented: true
 ##     working: true
 ##     file: "services/run_service.py"
@@ -26,7 +26,7 @@
 ##     status_history:
 ##         -working: true
 ##         -agent: "main"
-##         -comment: "Fixed row fetching logic. Now fetches starting from Header Row to correctly identify headers, then filters for Start Row."
+##         -comment: "Fixed NameError: header_row_idx is not defined by removing legacy variable usage and correctly calculating row index."
 ##
 ## frontend:
 ##   - task: "Environment Setup"
@@ -43,8 +43,8 @@
 ##
 ## metadata:
 ##   created_by: "main_agent"
-##   version: "1.5"
-##   test_sequence: 6
+##   version: "1.6"
+##   test_sequence: 7
 ##   run_ui: false
 ##
 ## test_plan:
@@ -56,7 +56,7 @@
 ##
 ## agent_communication:
 ##     -agent: "main"
-##     -message: "Identified and fixed off-by-one error in data fetching. Headers were being read from data rows. Fix deployed."
+##     -message: "Fixed runtime error caused by undefined variable in row index calculation. Fix deployed."
 
 # Protocol Guidelines for Main agent
 #
