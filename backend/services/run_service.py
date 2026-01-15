@@ -3,6 +3,7 @@ import logging
 import uuid
 from datetime import datetime, timezone
 from typing import Dict, List, Optional
+import json
 
 logger = logging.getLogger(__name__)
 
@@ -142,7 +143,10 @@ class RunService:
             items = await self.db.run_items.find({"run_id": run_id, "status": "pending"}).to_list(1000)
             
             # Process items with concurrency limit
-            semaphore = asyncio.Semaphore(3)  # Max 3 concurrent
+            # Spec: "looping atleast one lead a time"
+            # We set semaphore to 1 to be safe and conservative with API limits as requested
+            semaphore = asyncio.Semaphore(1) 
+            
             tasks = [self.process_item(item, field_mapping, prompt_config, api_key, semaphore) for item in items]
             await asyncio.gather(*tasks, return_exceptions=True)
             
@@ -184,10 +188,12 @@ class RunService:
                     {"$set": {"status": "processing", "attempts": item['attempts'] + 1}}
                 )
                 
-                # Extract required fields
+                # Extract and Normalize inputs per Spec
                 website = input_data.get(field_mapping['website_col'], '').strip()
                 company_name = input_data.get(field_mapping['company_col'], '').strip()
                 first_name = input_data.get(field_mapping.get('first_name_col', ''), '').strip()
+                
+                # Additional fields if mapped (optional)
                 description = input_data.get(field_mapping.get('description_col', ''), '').strip()
                 title = input_data.get(field_mapping.get('title_col', ''), '').strip()
                 
@@ -208,27 +214,45 @@ class RunService:
                 scrape_result = await self.scraper_service.scrape_company(website, company_name)
                 
                 if not scrape_result['success']:
-                    await self.db.run_items.update_one(
-                        {"id": item_id},
-                        {"$set": {
-                            "status": "failed",
-                            "error_code": scrape_result['error_code'],
-                            "error_message": scrape_result['error_message'],
-                            "updated_at": datetime.now(timezone.utc).isoformat()
-                        }}
+                    # Spec: "If all pages empty / blocked -> uses short description fallback"
+                    if description:
+                         logger.info(f"Scraping failed for {website}, falling back to description")
+                         summary_result = {
+                             'success': True,
+                             'summary': {
+                                 "products": [],
+                                 "industries": [],
+                                 "geo_markets": [],
+                                 "manufacturing_capabilities": [],
+                                 "trade_signals": [],
+                                 "one_sentence_company": description
+                             },
+                             'tokens_used': 0
+                         }
+                         # Mark as fallback success? Or just continue?
+                         # We'll continue to icebreaker generation with this summary
+                    else:
+                        await self.db.run_items.update_one(
+                            {"id": item_id},
+                            {"$set": {
+                                "status": "failed",
+                                "error_code": scrape_result['error_code'],
+                                "error_message": scrape_result['error_message'],
+                                "updated_at": datetime.now(timezone.utc).isoformat()
+                            }}
+                        )
+                        return
+                else:
+                    # Generate summary
+                    summary_result = await self.llm_service.generate_summary(
+                        api_key,
+                        prompt_config.get('model', 'gpt-4o'),
+                        prompt_config.get('summary_preset', 'logistics'),
+                        company_name,
+                        scrape_result['combined_text'],
+                        description,
+                        prompt_config.get('summary_prompt')
                     )
-                    return
-                
-                # Generate summary
-                summary_result = await self.llm_service.generate_summary(
-                    api_key,
-                    prompt_config.get('model', 'gpt-4o'),
-                    prompt_config.get('summary_preset', 'logistics'),
-                    company_name,
-                    scrape_result['combined_text'],
-                    description,
-                    prompt_config.get('summary_prompt')
-                )
                 
                 if not summary_result['success']:
                     await self.db.run_items.update_one(
