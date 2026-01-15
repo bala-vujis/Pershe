@@ -43,16 +43,23 @@ Return ONLY valid JSON with this exact schema:
   "one_sentence_company": "A concise description of the company"
 }}"""
 
-    def get_system_prompt_icebreaker(self) -> str:
-        """Get system prompt for icebreaker generation based on Vujis spec"""
+    def get_icebreaker_prompt(self) -> str:
+        """Get icebreaker generation prompt based on Vujis spec"""
         return """You're a helpful, intelligent Cold outbound assistant for vujis.
 
 Your task is to take these summaries and turn them into catchy, personalized openers for a cold outbound email campaign. The idea is we have done good research on the person and what they do at the company — and use it to lead into a pitch for Vujis.
 
+CONTEXT:
+Lead Context: {lead_context}
+Company Research Brief: {company_research_brief}
+
+STYLE/TEMPLATE TO FOLLOW (if provided):
+{icebreaker_template}
+
+RULES:
 **You'll return your icebreakers in the following strict JSON format:
 {"icebreaker": "Hey {FirstName},\n\nIf you reply with the HS code or product name of what {Shortened_Company_Name} offers, I can share 3 importers currently importing {their_product_base_category} from your competitors.\n\nIf it helps, I can also show you exactly how our platform pulled it."}
 
-**Rules:
 The Icebreaker should be of between 50 to 70 at max
 Do NOT write generic compliments (e.g., "Nice website!").
 Always Give 1 line gap (\n\n) after "Hey {name},
@@ -121,62 +128,79 @@ sometimes there maybe irrelavant service companies will come, manage those someh
         try:
             client = self.get_client(api_key)
             
-            # Prepare Lead Context for the user prompt
-            # Profile: {first_name} {last_name} {headline} {company_name}
-            # Note: We don't have last_name/headline separate in signature, but we can construct best effort
+            # Prepare Lead Context
+            lead_context_parts = []
+            if first_name: lead_context_parts.append(f"Name: {first_name}")
+            if title: lead_context_parts.append(f"Role: {title}")
+            lead_context_parts.append(f"Company: {company_name}")
+            lead_context_str = ", ".join(lead_context_parts)
             
-            # Since we only get first_name and title in args, we'll use those.
-            profile_str = f"{first_name} {title} {company_name}"
+            prompt_template = self.get_icebreaker_prompt()
             
-            # Website Data (Summary)
-            website_data_str = json.dumps(summary_json, indent=2)
-            
-            # Short Description (Fallback)
-            short_desc = summary_json.get('one_sentence_company', 'Not provided')
-            
-            user_prompt = f"Profile: {profile_str}\nWebsite: {website_data_str}\nShort description: {short_desc}"
-            
-            # System Prompt
-            system_prompt = self.get_system_prompt_icebreaker()
-            
-            # If custom prompt is provided, we might need to override. 
-            # But the user request specifically asked to implement "the whole prompt code".
-            # So if custom_prompt is NOT provided, we use the Vujis logic.
-            # If custom_prompt IS provided (e.g. from UI "Custom" preset), we should probably respect it?
-            # However, the user said "implement this". I will assume this is the NEW standard.
-            
-            if custom_prompt:
-                # If user manually overrides in UI, respect that, but wrap in system instructions?
-                # Actually, let's keep custom_prompt support for flexibility, but default to Vujis logic.
-                system_message = "You are a B2B cold email writing assistant. Return ONLY valid JSON."
-                user_message = f"{custom_prompt}\n\nContext:\n{user_prompt}"
-            else:
-                system_message = system_prompt
-                user_message = user_prompt
+            # Format input using fixed internal variables, injecting custom_prompt as a template string
+            prompt = prompt_template.format(
+                lead_context=lead_context_str,
+                company_research_brief=json.dumps(summary_json, indent=2),
+                icebreaker_template=(custom_prompt or "No specific template provided. Use standard professional tone.").strip()
+            )
 
             logger.info(f"Calling OpenAI for icebreaker - Company: {company_name}")
             
             response = await client.chat.completions.create(
                 model=model,
                 messages=[
-                    {"role": "system", "content": system_message},
-                    {"role": "user", "content": user_message}
+                    {"role": "system", "content": "You are a B2B cold email writing assistant. Return ONLY valid JSON."},
+                    {"role": "user", "content": prompt}
                 ],
-                temperature=0.5, # Matching the n8n config
+                temperature=0.5, 
                 response_format={"type": "json_object"}
             )
             
             content = response.choices[0].message.content.strip()
-            logger.info(f"Icebreaker Response Content: {content}")
+            logger.info(f"Icebreaker Response Content: {content}") 
             
             result_json = self._clean_and_parse_json(content)
             
-            icebreaker = result_json.get('icebreaker', '')
+            # Restore fallback logic for legacy prompts/formats
+            icebreaker = (result_json.get('icebreaker') or result_json.get('email') or result_json.get('message') or result_json.get('intro') or "").strip()
             
-            # Final cleaning pass just in case hyphens slipped through
+            # Hard validation: fail if empty
+            if not icebreaker:
+                return {
+                    "success": False,
+                    "error_code": "EMPTY_ICEBREAKER",
+                    "error_message": "Model returned empty icebreaker JSON.",
+                }
+            
+            # Spec validation: "If icebreaker contains - hyphen, run a post-process replace"
             if '-' in icebreaker:
-                icebreaker = icebreaker.replace(' - ', ', ').replace('-', ' ')
-            
+                modified_icebreaker = icebreaker.replace(' - ', ', ').replace('-', ' ')
+                
+                # Strict check
+                if '-' in modified_icebreaker: 
+                     logger.info("Regenerating icebreaker due to hyphens")
+                     response = await client.chat.completions.create(
+                        model=model,
+                        messages=[
+                            {"role": "system", "content": "You are a B2B cold email writing assistant. Return ONLY valid JSON."},
+                            {"role": "user", "content": prompt + "\n\nIMPORTANT: No hyphen characters allowed."}
+                        ],
+                        temperature=0.7,
+                        response_format={"type": "json_object"}
+                    )
+                     content = response.choices[0].message.content.strip()
+                     result_json = self._clean_and_parse_json(content)
+                     icebreaker = (result_json.get('icebreaker') or "").strip()
+                     
+                     if not icebreaker:
+                        return {
+                            "success": False,
+                            "error_code": "EMPTY_ICEBREAKER_RETRY",
+                            "error_message": "Model returned empty icebreaker on retry.",
+                        }
+                else:
+                    icebreaker = modified_icebreaker
+
             return {
                 "success": True,
                 "icebreaker": icebreaker,
