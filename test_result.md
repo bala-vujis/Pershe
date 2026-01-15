@@ -14,9 +14,9 @@
 # Main and testing agents must follow this exact format to maintain testing data. 
 # The testing data must be entered in yaml format Below is the data structure:
 # 
-## user_problem_statement: "Fix Empty Icebreaker and UI Columns"
+## user_problem_statement: "Implement Vujis Specific Prompting Strategy"
 ## backend:
-##   - task: "LLM Service Fallback"
+##   - task: "LLM Service Update"
 ##     implemented: true
 ##     working: true
 ##     file: "services/llm_service.py"
@@ -26,49 +26,37 @@
 ##     status_history:
 ##         -working: true
 ##         -agent: "main"
-##         -comment: "Restored fallback logic for icebreaker extraction (checking 'email', 'message', 'intro' keys). Added response logging."
-##
-##   - task: "Server Run Context"
-##     implemented: true
-##     working: true
-##     file: "server.py"
-##     stuck_count: 0
-##     priority: "high"
-##     needs_retesting: true
-##     status_history:
-##         -working: true
-##         -agent: "main"
-##         -comment: "Updated GET /runs/{id} to return project and field_mapping context."
+##         -comment: "Updated get_icebreaker_prompt/generate_icebreaker to use the exact system prompt and rules provided in the Vujis spec."
 ##
 ## frontend:
-##   - task: "Run Detail Column Mapping"
+##   - task: "Environment Setup"
 ##     implemented: true
 ##     working: true
-##     file: "pages/RunDetail.js"
+##     file: "package.json"
 ##     stuck_count: 0
 ##     priority: "high"
-##     needs_retesting: true
+##     needs_retesting: false
 ##     status_history:
 ##         -working: true
 ##         -agent: "main"
-##         -comment: "Updated RunDetail to dynamically display columns based on field mapping (First Name, Email, Title, etc)."
+##         -comment: "Installed dependencies and started frontend service."
 ##
 ## metadata:
 ##   created_by: "main_agent"
-##   version: "1.7"
-##   test_sequence: 8
+##   version: "1.8"
+##   test_sequence: 9
 ##   run_ui: false
 ##
 ## test_plan:
 ##   current_focus:
-##     - "User Validation"
+##     - "Verify Icebreaker Quality"
 ##   stuck_tasks: []
 ##   test_all: false
 ##   test_priority: "sequential"
 ##
 ## agent_communication:
 ##     -agent: "main"
-##     -message: "Implemented UI fix for columns and backend fix for potential empty icebreakers. Ready for testing."
+##     -message: "Implemented Vujis prompting logic. Ready for quality check."
 
 # Protocol Guidelines for Main agent
 #
