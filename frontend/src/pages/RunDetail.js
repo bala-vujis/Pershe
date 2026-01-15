@@ -146,6 +146,17 @@ const RunDetail = () => {
               </div>
             </div>
           )}
+          {run?.status === 'failed' && run?.error_message && (
+            <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-6 mb-8">
+              <div className="flex items-center gap-3">
+                <AlertCircle className="w-5 h-5 text-red-400" />
+                <div>
+                  <p className="text-sm font-medium text-red-400">Run Failed</p>
+                  <p className="text-xs text-zinc-400">{run.error_message}</p>
+                </div>
+              </div>
+            </div>
+          )}
 
           <div className="bg-zinc-900/20 border border-white/5 rounded-xl overflow-hidden">
             <div className="p-6 border-b border-white/5">
