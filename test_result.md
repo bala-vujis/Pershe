@@ -14,37 +14,49 @@
 # Main and testing agents must follow this exact format to maintain testing data. 
 # The testing data must be entered in yaml format Below is the data structure:
 # 
-## user_problem_statement: "Fix Run Data Mapping and Execution Error"
+## user_problem_statement: "Fix Empty Icebreaker and UI Columns"
 ## backend:
-##   - task: "Run Service Row Index Fix"
+##   - task: "LLM Service Fallback"
 ##     implemented: true
 ##     working: true
-##     file: "services/run_service.py"
+##     file: "services/llm_service.py"
 ##     stuck_count: 0
 ##     priority: "high"
 ##     needs_retesting: true
 ##     status_history:
 ##         -working: true
 ##         -agent: "main"
-##         -comment: "Fixed NameError: header_row_idx is not defined by removing legacy variable usage and correctly calculating row index."
+##         -comment: "Restored fallback logic for icebreaker extraction (checking 'email', 'message', 'intro' keys). Added response logging."
 ##
-## frontend:
-##   - task: "Environment Setup"
+##   - task: "Server Run Context"
 ##     implemented: true
 ##     working: true
-##     file: "package.json"
+##     file: "server.py"
 ##     stuck_count: 0
 ##     priority: "high"
-##     needs_retesting: false
+##     needs_retesting: true
 ##     status_history:
 ##         -working: true
 ##         -agent: "main"
-##         -comment: "Installed dependencies and started frontend service."
+##         -comment: "Updated GET /runs/{id} to return project and field_mapping context."
+##
+## frontend:
+##   - task: "Run Detail Column Mapping"
+##     implemented: true
+##     working: true
+##     file: "pages/RunDetail.js"
+##     stuck_count: 0
+##     priority: "high"
+##     needs_retesting: true
+##     status_history:
+##         -working: true
+##         -agent: "main"
+##         -comment: "Updated RunDetail to dynamically display columns based on field mapping (First Name, Email, Title, etc)."
 ##
 ## metadata:
 ##   created_by: "main_agent"
-##   version: "1.6"
-##   test_sequence: 7
+##   version: "1.7"
+##   test_sequence: 8
 ##   run_ui: false
 ##
 ## test_plan:
@@ -56,7 +68,7 @@
 ##
 ## agent_communication:
 ##     -agent: "main"
-##     -message: "Fixed runtime error caused by undefined variable in row index calculation. Fix deployed."
+##     -message: "Implemented UI fix for columns and backend fix for potential empty icebreakers. Ready for testing."
 
 # Protocol Guidelines for Main agent
 #
