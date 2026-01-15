@@ -131,9 +131,15 @@ class RunService:
             # Get user's OpenAI API key
             api_key_doc = await self.db.api_keys.find_one({"user_id": run['user_id'], "provider": "openai"})
             if not api_key_doc:
+                error_msg = "Missing OpenAI API Key. Please add it in Settings."
+                logger.error(f"Run {run_id} failed: {error_msg}")
                 await self.db.runs.update_one(
                     {"id": run_id},
-                    {"$set": {"status": "failed", "finished_at": datetime.now(timezone.utc).isoformat()}}
+                    {"$set": {
+                        "status": "failed", 
+                        "error_message": error_msg,
+                        "finished_at": datetime.now(timezone.utc).isoformat()
+                    }}
                 )
                 return
             
