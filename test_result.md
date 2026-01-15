@@ -14,49 +14,37 @@
 # Main and testing agents must follow this exact format to maintain testing data. 
 # The testing data must be entered in yaml format Below is the data structure:
 # 
-## user_problem_statement: "Fix Run Failure and Missing Error Feedback"
+## user_problem_statement: "Fix Run Data Mapping Issue"
 ## backend:
-##   - task: "Run Service Error Handling"
+##   - task: "Run Service Header Fix"
 ##     implemented: true
 ##     working: true
 ##     file: "services/run_service.py"
-##     stuck_count: 0
-##     priority: "high"
-##     needs_retesting: false
-##     status_history:
-##         -working: true
-##         -agent: "main"
-##         -comment: "Updated process_run to capture and store top-level errors (like missing API key) in the run document."
-##
-##   - task: "Run Model Update"
-##     implemented: true
-##     working: true
-##     file: "server.py"
-##     stuck_count: 0
-##     priority: "high"
-##     needs_retesting: false
-##     status_history:
-##         -working: true
-##         -agent: "main"
-##         -comment: "Added error_message field to RunResponse model."
-##
-## frontend:
-##   - task: "Run Detail Error Display"
-##     implemented: true
-##     working: true
-##     file: "pages/RunDetail.js"
 ##     stuck_count: 0
 ##     priority: "high"
 ##     needs_retesting: true
 ##     status_history:
 ##         -working: true
 ##         -agent: "main"
-##         -comment: "Added UI component to display run-level error messages."
+##         -comment: "Fixed row fetching logic. Now fetches starting from Header Row to correctly identify headers, then filters for Start Row."
+##
+## frontend:
+##   - task: "Environment Setup"
+##     implemented: true
+##     working: true
+##     file: "package.json"
+##     stuck_count: 0
+##     priority: "high"
+##     needs_retesting: false
+##     status_history:
+##         -working: true
+##         -agent: "main"
+##         -comment: "Installed dependencies and started frontend service."
 ##
 ## metadata:
 ##   created_by: "main_agent"
-##   version: "1.4"
-##   test_sequence: 5
+##   version: "1.5"
+##   test_sequence: 6
 ##   run_ui: false
 ##
 ## test_plan:
@@ -68,7 +56,7 @@
 ##
 ## agent_communication:
 ##     -agent: "main"
-##     -message: "Fixed silent failure issue. Root cause identified as missing OpenAI API key."
+##     -message: "Identified and fixed off-by-one error in data fetching. Headers were being read from data rows. Fix deployed."
 
 # Protocol Guidelines for Main agent
 #
