@@ -14,73 +14,61 @@
 # Main and testing agents must follow this exact format to maintain testing data. 
 # The testing data must be entered in yaml format Below is the data structure:
 # 
-## user_problem_statement: "Improve final run with better scraping, summarization and icebreaker logic"
+## user_problem_statement: "Fix Run Failure and Missing Error Feedback"
 ## backend:
-##   - task: "Scraper Service Refactor"
-##     implemented: true
-##     working: true
-##     file: "services/scraper_service.py"
-##     stuck_count: 0
-##     priority: "high"
-##     needs_retesting: true
-##     status_history:
-##         -working: true
-##         -agent: "main"
-##         -comment: "Implemented base_origin normalization, blacklist/whitelist link scoring, timeout/retry logic."
-##
-##   - task: "LLM Service Refactor"
-##     implemented: true
-##     working: true
-##     file: "services/llm_service.py"
-##     stuck_count: 0
-##     priority: "high"
-##     needs_retesting: true
-##     status_history:
-##         -working: true
-##         -agent: "main"
-##         -comment: "Implemented structured summary schema, aggregated summarization, improved icebreaker prompt and validation."
-##
-##   - task: "Run Service Refactor"
+##   - task: "Run Service Error Handling"
 ##     implemented: true
 ##     working: true
 ##     file: "services/run_service.py"
-##     stuck_count: 0
-##     priority: "high"
-##     needs_retesting: true
-##     status_history:
-##         -working: true
-##         -agent: "main"
-##         -comment: "Reduced concurrency to 1, implemented input normalization and new flow integration."
-##
-## frontend:
-##   - task: "Environment Setup"
-##     implemented: true
-##     working: true
-##     file: "package.json"
 ##     stuck_count: 0
 ##     priority: "high"
 ##     needs_retesting: false
 ##     status_history:
 ##         -working: true
 ##         -agent: "main"
-##         -comment: "Installed dependencies and started frontend service."
+##         -comment: "Updated process_run to capture and store top-level errors (like missing API key) in the run document."
+##
+##   - task: "Run Model Update"
+##     implemented: true
+##     working: true
+##     file: "server.py"
+##     stuck_count: 0
+##     priority: "high"
+##     needs_retesting: false
+##     status_history:
+##         -working: true
+##         -agent: "main"
+##         -comment: "Added error_message field to RunResponse model."
+##
+## frontend:
+##   - task: "Run Detail Error Display"
+##     implemented: true
+##     working: true
+##     file: "pages/RunDetail.js"
+##     stuck_count: 0
+##     priority: "high"
+##     needs_retesting: true
+##     status_history:
+##         -working: true
+##         -agent: "main"
+##         -comment: "Added UI component to display run-level error messages."
 ##
 ## metadata:
 ##   created_by: "main_agent"
-##   version: "1.3"
-##   test_sequence: 4
+##   version: "1.4"
+##   test_sequence: 5
 ##   run_ui: false
 ##
 ## test_plan:
 ##   current_focus:
-##     - "End-to-end run test"
+##     - "User Validation"
 ##   stuck_tasks: []
 ##   test_all: false
 ##   test_priority: "sequential"
 ##
 ## agent_communication:
 ##     -agent: "main"
-##     -message: "Refactored services to match the detailed spec. Ready for testing."
+##     -message: "Fixed silent failure issue. Root cause identified as missing OpenAI API key."
 
 # Protocol Guidelines for Main agent
 #
