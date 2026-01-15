@@ -14,31 +14,43 @@
 # Main and testing agents must follow this exact format to maintain testing data. 
 # The testing data must be entered in yaml format Below is the data structure:
 # 
-## user_problem_statement: "Fix Google Connection Issue"
+## user_problem_statement: "Improve final run with better scraping, summarization and icebreaker logic"
 ## backend:
-##   - task: "Environment Setup"
+##   - task: "Scraper Service Refactor"
 ##     implemented: true
 ##     working: true
-##     file: "requirements.txt"
+##     file: "services/scraper_service.py"
 ##     stuck_count: 0
 ##     priority: "high"
-##     needs_retesting: false
+##     needs_retesting: true
 ##     status_history:
 ##         -working: true
 ##         -agent: "main"
-##         -comment: "Installed dependencies, fixed google-auth conflict, started services. API Health check passed."
+##         -comment: "Implemented base_origin normalization, blacklist/whitelist link scoring, timeout/retry logic."
 ##
-##   - task: "Google OAuth Configuration"
+##   - task: "LLM Service Refactor"
 ##     implemented: true
 ##     working: true
-##     file: ".env"
+##     file: "services/llm_service.py"
 ##     stuck_count: 0
 ##     priority: "high"
-##     needs_retesting: false
+##     needs_retesting: true
 ##     status_history:
 ##         -working: true
 ##         -agent: "main"
-##         -comment: "Updated Google Client ID and Secret. Verified auth URL generation uses new credentials."
+##         -comment: "Implemented structured summary schema, aggregated summarization, improved icebreaker prompt and validation."
+##
+##   - task: "Run Service Refactor"
+##     implemented: true
+##     working: true
+##     file: "services/run_service.py"
+##     stuck_count: 0
+##     priority: "high"
+##     needs_retesting: true
+##     status_history:
+##         -working: true
+##         -agent: "main"
+##         -comment: "Reduced concurrency to 1, implemented input normalization and new flow integration."
 ##
 ## frontend:
 ##   - task: "Environment Setup"
@@ -55,20 +67,20 @@
 ##
 ## metadata:
 ##   created_by: "main_agent"
-##   version: "1.2"
-##   test_sequence: 3
+##   version: "1.3"
+##   test_sequence: 4
 ##   run_ui: false
 ##
 ## test_plan:
 ##   current_focus:
-##     - "User UI Verification"
+##     - "End-to-end run test"
 ##   stuck_tasks: []
 ##   test_all: false
 ##   test_priority: "sequential"
 ##
 ## agent_communication:
 ##     -agent: "main"
-##     -message: "Backend fully configured with new Google credentials. Waiting for user to test UI flow."
+##     -message: "Refactored services to match the detailed spec. Ready for testing."
 
 # Protocol Guidelines for Main agent
 #
