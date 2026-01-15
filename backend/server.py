@@ -95,6 +95,7 @@ class RunResponse(BaseModel):
     id: str
     project_id: str
     status: str
+    error_message: Optional[str] = None
     total_rows: int
     processed_rows: int
     success_rows: int
