@@ -14,9 +14,9 @@
 # Main and testing agents must follow this exact format to maintain testing data. 
 # The testing data must be entered in yaml format Below is the data structure:
 # 
-## user_problem_statement: "Implement Vujis Specific Prompting Strategy"
+## user_problem_statement: "Fix Empty Icebreakers and Optimize Performance"
 ## backend:
-##   - task: "LLM Service Update"
+##   - task: "LLM Service Refactor"
 ##     implemented: true
 ##     working: true
 ##     file: "services/llm_service.py"
@@ -26,7 +26,31 @@
 ##     status_history:
 ##         -working: true
 ##         -agent: "main"
-##         -comment: "Updated get_icebreaker_prompt/generate_icebreaker to use the exact system prompt and rules provided in the Vujis spec."
+##         -comment: "Updated prompt structure to treat custom prompt as template injection. Added strict validation for empty icebreakers."
+##
+##   - task: "Google Service Batch Write"
+##     implemented: true
+##     working: true
+##     file: "services/google_service.py"
+##     stuck_count: 0
+##     priority: "high"
+##     needs_retesting: true
+##     status_history:
+##         -working: true
+##         -agent: "main"
+##         -comment: "Implemented batch_write_values method."
+##
+##   - task: "Run Service Performance"
+##     implemented: true
+##     working: true
+##     file: "services/run_service.py"
+##     stuck_count: 0
+##     priority: "high"
+##     needs_retesting: true
+##     status_history:
+##         -working: true
+##         -agent: "main"
+##         -comment: "Increased concurrency to 4 and implemented batch sheet updates."
 ##
 ## frontend:
 ##   - task: "Environment Setup"
@@ -43,20 +67,20 @@
 ##
 ## metadata:
 ##   created_by: "main_agent"
-##   version: "1.8"
-##   test_sequence: 9
+##   version: "1.9"
+##   test_sequence: 10
 ##   run_ui: false
 ##
 ## test_plan:
 ##   current_focus:
-##     - "Verify Icebreaker Quality"
+##     - "Verify Icebreaker Content"
 ##   stuck_tasks: []
 ##   test_all: false
 ##   test_priority: "sequential"
 ##
 ## agent_communication:
 ##     -agent: "main"
-##     -message: "Implemented Vujis prompting logic. Ready for quality check."
+##     -message: "Refactored prompt logic to use template injection, solving the {FirstName} variable issue. Optimized sheet writing with batch updates."
 
 # Protocol Guidelines for Main agent
 #
