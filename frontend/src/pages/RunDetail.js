@@ -13,6 +13,7 @@ const RunDetail = () => {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [pollingInterval, setPollingInterval] = useState(null);
+  const [fieldMapping, setFieldMapping] = useState(null);
 
   useEffect(() => {
     fetchRun();
@@ -26,6 +27,7 @@ const RunDetail = () => {
       const response = await api.get(`/runs/${runId}`);
       setRun(response.data.run);
       setItems(response.data.items || []);
+      setFieldMapping(response.data.field_mapping);
       
       // Stop polling if run is completed or failed
       if (response.data.run.status === 'completed' || response.data.run.status === 'failed') {
@@ -59,6 +61,25 @@ const RunDetail = () => {
       default:
         return <AlertCircle className="w-4 h-4 text-zinc-500" />;
     }
+  };
+
+  // Helper to get value for a specific field based on mapping
+  const getValue = (item, fieldType) => {
+    if (!fieldMapping || !item.input_data) return '-';
+    
+    // Determine the column name from mapping
+    let colName = '';
+    switch(fieldType) {
+      case 'company': colName = fieldMapping.company_col; break;
+      case 'website': colName = fieldMapping.website_col; break;
+      case 'firstname': colName = fieldMapping.first_name_col; break;
+      case 'email': colName = fieldMapping.email_col; break;
+      case 'title': colName = fieldMapping.title_col; break;
+      case 'description': colName = fieldMapping.description_col; break;
+      default: return '-';
+    }
+    
+    return item.input_data[colName] || '-';
   };
 
   if (loading) {
@@ -169,6 +190,9 @@ const RunDetail = () => {
                     <th className="text-left p-4 text-xs font-medium text-zinc-400 uppercase tracking-wider">Row</th>
                     <th className="text-left p-4 text-xs font-medium text-zinc-400 uppercase tracking-wider">Company</th>
                     <th className="text-left p-4 text-xs font-medium text-zinc-400 uppercase tracking-wider">Website</th>
+                    <th className="text-left p-4 text-xs font-medium text-zinc-400 uppercase tracking-wider">First Name</th>
+                    {fieldMapping?.email_col && <th className="text-left p-4 text-xs font-medium text-zinc-400 uppercase tracking-wider">Email</th>}
+                    {fieldMapping?.title_col && <th className="text-left p-4 text-xs font-medium text-zinc-400 uppercase tracking-wider">Title</th>}
                     <th className="text-left p-4 text-xs font-medium text-zinc-400 uppercase tracking-wider">Status</th>
                     <th className="text-left p-4 text-xs font-medium text-zinc-400 uppercase tracking-wider">Icebreaker</th>
                     <th className="text-left p-4 text-xs font-medium text-zinc-400 uppercase tracking-wider">Error</th>
@@ -178,8 +202,11 @@ const RunDetail = () => {
                   {items.map((item) => (
                     <tr key={item.id} className="border-b border-white/5 hover:bg-white/[0.02]" data-testid={`item-row-${item.id}`}>
                       <td className="p-4 text-sm text-zinc-300">{item.row_index}</td>
-                      <td className="p-4 text-sm text-zinc-300">{item.input_data?.Company || item.input_data?.company_name || 'N/A'}</td>
-                      <td className="p-4 text-sm text-zinc-500 truncate max-w-xs">{item.website_url || 'N/A'}</td>
+                      <td className="p-4 text-sm text-zinc-300 truncate max-w-xs">{getValue(item, 'company')}</td>
+                      <td className="p-4 text-sm text-zinc-500 truncate max-w-xs">{getValue(item, 'website')}</td>
+                      <td className="p-4 text-sm text-zinc-500 truncate max-w-xs">{getValue(item, 'firstname')}</td>
+                      {fieldMapping?.email_col && <td className="p-4 text-sm text-zinc-500 truncate max-w-xs">{getValue(item, 'email')}</td>}
+                      {fieldMapping?.title_col && <td className="p-4 text-sm text-zinc-500 truncate max-w-xs">{getValue(item, 'title')}</td>}
                       <td className="p-4">
                         <div className="flex items-center gap-2">
                           {getStatusIcon(item.status)}
