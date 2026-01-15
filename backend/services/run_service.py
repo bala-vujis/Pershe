@@ -33,13 +33,13 @@ class RunService:
         
         # Fetch sheet data
         try:
-            # Use row_range from project, or default to A1:Z1000
-            row_range = project.get('row_range') or 'A1:Z1000'
-            
-            # If project has start_row and end_row, construct A1 notation
-            start_row = project.get('start_row', 2)
+            # Determine range to fetch: from header_row to end_row
+            header_row = project.get('header_row', 1)
             end_row = project.get('end_row', 1000)
-            row_range = f"A{start_row}:Z{end_row}"
+            start_row = project.get('start_row', 2)
+            
+            # Fetch from header row to ensure we get headers
+            row_range = f"A{header_row}:Z{end_row}"
             
             values = await self.google_service.get_sheet_values(
                 user_id,
@@ -50,13 +50,26 @@ class RunService:
         except Exception as e:
             raise ValueError(f"Failed to fetch sheet data: {str(e)}")
         
-        if not values or len(values) < 2:
-            raise ValueError("Sheet has insufficient data")
+        if not values or len(values) < 1:
+            raise ValueError("Sheet is empty")
         
-        # Parse headers
-        header_row_idx = project.get('header_row', 1) - 1
-        headers = values[header_row_idx] if header_row_idx < len(values) else []
-        data_rows = values[header_row_idx + 1:]
+        # Parse headers (always first row of fetched data)
+        headers = values[0]
+        
+        # Calculate data rows
+        # values[0] is header_row
+        # values[1] is header_row + 1
+        # We want to start from start_row
+        
+        # Calculate index relative to fetched values
+        # start_row - header_row gives the index in values array
+        # Example: header=1, start=2. Index = 2-1 = 1. values[1] is the first data row.
+        start_idx = start_row - header_row
+        
+        if start_idx < 1:
+            start_idx = 1 # Always skip header
+            
+        data_rows = values[start_idx:] if start_idx < len(values) else []
         
         # Limit rows for preview mode
         if mode == "preview":
