@@ -202,3 +202,24 @@ class GoogleService:
         ).execute()
         
         return result
+
+    async def batch_write_values(self, user_id: str, spreadsheet_id: str, data: list):
+        """
+        Batch write values to a sheet
+        data = [
+          {"range": "Sheet1!AA1:AC1", "values": [[...]]},
+          ...
+        ]
+        """
+        creds = await self.get_credentials(user_id)
+        service = build("sheets", "v4", credentials=creds)
+
+        body = {
+            "valueInputOption": "RAW",
+            "data": data
+        }
+
+        return service.spreadsheets().values().batchUpdate(
+            spreadsheetId=spreadsheet_id,
+            body=body
+        ).execute()
