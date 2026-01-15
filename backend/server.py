@@ -303,10 +303,19 @@ async def get_run(run_id: str, current_user: Dict = Depends(get_current_user)):
     if not run:
         raise HTTPException(status_code=404, detail="Run not found")
     
+    # Get project and field mapping for UI context
+    project = await db.projects.find_one({"id": run['project_id']}, {"_id": 0})
+    field_mapping = await db.field_mappings.find_one({"project_id": run['project_id']}, {"_id": 0})
+    
     # Get run items
     items = await db.run_items.find({"run_id": run_id}, {"_id": 0}).to_list(1000)
     
-    return {"run": run, "items": items}
+    return {
+        "run": run, 
+        "items": items,
+        "project": project,
+        "field_mapping": field_mapping
+    }
 
 @api_router.get("/runs")
 async def list_runs(
