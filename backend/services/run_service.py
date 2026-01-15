@@ -178,7 +178,11 @@ class RunService:
             logger.error(f"Error processing run {run_id}: {str(e)}")
             await self.db.runs.update_one(
                 {"id": run_id},
-                {"$set": {"status": "failed", "finished_at": datetime.now(timezone.utc).isoformat()}}
+                {"$set": {
+                    "status": "failed", 
+                    "error_message": str(e),
+                    "finished_at": datetime.now(timezone.utc).isoformat()
+                }}
             )
     
     async def process_item(self, item: Dict, field_mapping: Dict, prompt_config: Dict, api_key: str, semaphore: asyncio.Semaphore):
