@@ -90,10 +90,10 @@ Return JSON only."""
             )
             
             content = response.choices[0].message.content.strip()
+            logger.info(f"Summary Content: {content[:100]}...") # Added logging
             summary_json = self._clean_and_parse_json(content)
             
             # Spec: If empty page, return all fields as empty arrays + one_sentence_company="no content"
-            # We check if the result is effectively empty
             if not any(summary_json.values()):
                 summary_json["one_sentence_company"] = "no content"
             
@@ -112,43 +112,32 @@ Return JSON only."""
         try:
             client = self.get_client(api_key)
             
-            # Prepare Lead Context as per Spec
-            # First name, role/headline (cleaned), company short name, location
+            # Prepare Lead Context
             lead_context_parts = []
             if first_name: lead_context_parts.append(f"Name: {first_name}")
             if title: lead_context_parts.append(f"Role: {title}")
             lead_context_parts.append(f"Company: {company_name}")
             lead_context_str = ", ".join(lead_context_parts)
             
-            # Prepare Company Research Brief
-            # If research is empty, fallback_description (not handled here, logic in run_service or just passed as empty)
-            # We assume summary_json is the brief
-            
             prompt_template = custom_prompt if custom_prompt else self.get_icebreaker_prompt()
             
             # Format inputs
-            # Handle both standard and custom prompt variables
             format_vars = {
                 'lead_context': lead_context_str,
                 'company_research_brief': json.dumps(summary_json, indent=2),
-                # Legacy support for custom prompts
                 'first_name': first_name or "there",
                 'company_name': company_name,
                 'summary_json': json.dumps(summary_json, indent=2),
                 'title': title or ""
             }
             
-            # Safe formatting
             from string import Template
             try:
-                # Try standard format first
                 if not custom_prompt:
                      prompt = prompt_template.format(**format_vars)
                 else:
-                    # For custom prompts, use safe substitution
                      prompt = Template(prompt_template).safe_substitute(**format_vars)
             except Exception:
-                # Fallback
                  prompt = Template(prompt_template).safe_substitute(**format_vars)
 
             logger.info(f"Calling OpenAI for icebreaker - Company: {company_name}")
@@ -164,23 +153,25 @@ Return JSON only."""
             )
             
             content = response.choices[0].message.content.strip()
+            logger.info(f"Icebreaker Response Content: {content}") # Added logging
+            
             result_json = self._clean_and_parse_json(content)
             
+            # Restore fallback logic for legacy prompts/formats
             icebreaker = result_json.get('icebreaker', '')
+            if not icebreaker:
+                icebreaker = result_json.get('email', '')
+            if not icebreaker:
+                icebreaker = result_json.get('message', '')
+            if not icebreaker:
+                icebreaker = result_json.get('intro', '')
             
             # Spec validation: "If icebreaker contains - hyphen, run a post-process replace"
             if '-' in icebreaker:
-                # Replace hyphen with space only if it does not break meaning (simple heuristic: replace ' - ' with ', ' or just ' ')
-                # Spec says "Replace hyphen with space only if it does not break meaning". 
-                # Simplest safe approach: replace " - " with ", " and "-" inside words we leave? 
-                # "Otherwise regenerate with 'No hyphen characters allowed.'"
-                
-                # Let's try simple replacement first
                 modified_icebreaker = icebreaker.replace(' - ', ', ').replace('-', ' ')
                 
-                # If it still looks weird or we want to be strict as per spec "Otherwise regenerate"
-                # Let's regenerate to be safe if it was a major hyphen usage
-                if '-' in icebreaker: # strict
+                # Strict check
+                if '-' in modified_icebreaker: 
                      logger.info("Regenerating icebreaker due to hyphens")
                      response = await client.chat.completions.create(
                         model=model,
@@ -194,6 +185,8 @@ Return JSON only."""
                      content = response.choices[0].message.content.strip()
                      result_json = self._clean_and_parse_json(content)
                      icebreaker = result_json.get('icebreaker', '')
+                else:
+                    icebreaker = modified_icebreaker
 
             return {
                 "success": True,
