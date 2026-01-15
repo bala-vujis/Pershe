@@ -166,14 +166,13 @@ class RunService:
             items = await self.db.run_items.find({"run_id": run_id, "status": "pending"}).to_list(1000)
             
             # Process items with concurrency limit
-            # Spec: "looping atleast one lead a time"
-            # We set semaphore to 1 to be safe and conservative with API limits as requested
-            semaphore = asyncio.Semaphore(1) 
+            # Spec: Increased concurrency to 4
+            semaphore = asyncio.Semaphore(4) 
             
             tasks = [self.process_item(item, field_mapping, prompt_config, api_key, semaphore) for item in items]
             await asyncio.gather(*tasks, return_exceptions=True)
             
-            # Write results back to sheet
+            # Write results back to sheet using batch update
             await self.write_results_to_sheet(run_id, run['user_id'], project, field_mapping)
             
             # Update run status
@@ -256,8 +255,6 @@ class RunService:
                              },
                              'tokens_used': 0
                          }
-                         # Mark as fallback success? Or just continue?
-                         # We'll continue to icebreaker generation with this summary
                     else:
                         await self.db.run_items.update_one(
                             {"id": item_id},
@@ -363,9 +360,9 @@ class RunService:
                 )
     
     async def write_results_to_sheet(self, run_id: str, user_id: str, project: Dict, field_mapping: Dict):
-        """Write results back to Google Sheet"""
+        """Write results back to Google Sheet using batch update"""
         try:
-            # Get successful items
+            # Get processed items
             items = await self.db.run_items.find(
                 {"run_id": run_id, "status": {"$in": ["success", "failed"]}}
             ).sort("row_index", 1).to_list(1000)
@@ -373,7 +370,6 @@ class RunService:
             if not items:
                 return
             
-            # Prepare data to write
             output_mode = field_mapping.get('output_mode', 'same_sheet')
             
             if output_mode == "same_sheet":
@@ -391,17 +387,16 @@ class RunService:
                     # Convert to A1 notation
                     col_letters = self._index_to_column(last_col_idx + 1)
                     
-                    # Write headers
-                    header_range = f"{col_letters}{project.get('header_row', 1)}"
-                    await self.google_service.write_sheet_values(
-                        user_id,
-                        project['spreadsheet_id'],
-                        project['sheet_name'],
-                        header_range,
-                        [["Icebreaker", "Status", "Error"]]
-                    )
+                    batch_data = []
                     
-                    # Write data
+                    # 1. Prepare Header
+                    header_range = f"{col_letters}{project.get('header_row', 1)}"
+                    batch_data.append({
+                        "range": f"{project['sheet_name']}!{header_range}",
+                        "values": [["Icebreaker", "Status", "Error"]]
+                    })
+                    
+                    # 2. Prepare Rows
                     for item in items:
                         row_idx = item['row_index']
                         icebreaker = item.get('output_icebreaker', '')
@@ -409,12 +404,17 @@ class RunService:
                         error = item.get('error_message', '')
                         
                         data_range = f"{col_letters}{row_idx}"
-                        await self.google_service.write_sheet_values(
+                        batch_data.append({
+                            "range": f"{project['sheet_name']}!{data_range}",
+                            "values": [[icebreaker, status, error]]
+                        })
+                    
+                    # 3. Execute Batch Update
+                    if batch_data:
+                        await self.google_service.batch_write_values(
                             user_id,
                             project['spreadsheet_id'],
-                            project['sheet_name'],
-                            data_range,
-                            [[icebreaker, status, error]]
+                            batch_data
                         )
         
         except Exception as e:
