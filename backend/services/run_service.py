@@ -100,10 +100,14 @@ class RunService:
             # Parse row data
             row_dict = {headers[i]: row[i] if i < len(row) else "" for i in range(len(headers))}
             
+            # Calculate actual row index in sheet (1-based)
+            # start_row is the row number of the first data row
+            current_row_idx = start_row + idx
+            
             item_doc = {
                 "id": str(uuid.uuid4()),
                 "run_id": run_id,
-                "row_index": idx + header_row_idx + 2,  # +2 for header and 1-based indexing
+                "row_index": current_row_idx,
                 "input_data": row_dict,
                 "status": "pending",
                 "error_code": None,
