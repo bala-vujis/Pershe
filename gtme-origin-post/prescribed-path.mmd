@@ -1,0 +1,17 @@
+flowchart TD
+    A["Pick a bottleneck<br/>in your current role"] --> B["A problem — not a tool"]
+    B --> C["Days 1–30<br/>Solve it end-to-end<br/>with free tools"]
+    C --> D["Ship ugly<br/>Break it<br/>Fix it"]
+    D --> E{"Working<br/>end-to-end?"}
+    E -->|"Stuck"| F["YouTube + docs + Claude<br/>Figure it out"]
+    F --> D
+    E -->|"Yes"| G["Days 31–60<br/>Add the adjacent layer<br/>webhook / CRM / second tool"]
+    G --> H["Days 61–90<br/>Wire two workflows together"]
+    H --> I["Pick the next bottleneck"]
+    I --> C
+
+    FOUNDATION["Foundation<br/>Business understanding<br/>+ figureoutable mindset<br/>+ surface-level code"]
+
+    style A fill:#e3f2fd,stroke:#1565c0,stroke-width:2px
+    style FOUNDATION fill:#f3e5f5,stroke:#6a1b9a,stroke-width:2px,stroke-dasharray: 5 5
+    style E fill:#fff3e0,stroke:#e65100
